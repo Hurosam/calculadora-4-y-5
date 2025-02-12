@@ -97,6 +97,11 @@ class CalculadoraImpuestos:
             impuestos_valor = total_valor - self.uit7.get() - uit3_valor - itf_valor
             self.impuestos.set(round(impuestos_valor, 2))
             
+             # Calcular Impuestos a pagar CORREGIDO
+            base_imponible = total_valor - self.uit7.get() - uit3_valor - itf_valor
+            impuestos_valor = max(base_imponible * 0.08, 0)  # Aplicar tasa del 15% y mínimo 0
+            self.impuestos.set(round(impuestos_valor, 2))
+
         except tk.TclError:
             # Manejar errores de conversión
             pass
