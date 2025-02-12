@@ -1,9 +1,159 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+        }
+        
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 90%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: right;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+
+        .description {
+            width: 60%;
+        }
+
+        .amount {
+            width: 40%;
+        }
+
+        .readonly {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
 <body>
+    <table>
+        <tr>
+            <th class="description">Descripción</th>
+            <th class="amount">S/.</th>
+        </tr>
+        <tr>
+            <td>Saldo</td>
+            <td><input type="number" id="saldo" placeholder="0.00"></td>
+        </tr>
+        <tr>
+            <td>Saldo+20%</td>
+            <td><input type="number" id="saldoPlus" class="readonly" readonly></td>
+        </tr>
+        <tr>
+            <td>Saldo-saldo20%</td>
+            <td><input type="number" id="saldoMinus" class="readonly" readonly></td>
+        </tr>
+        <tr>
+            <td>Otros</td>
+            <td><input type="number" id="otros" placeholder="0.00"></td>
+        </tr>
+        <tr>
+            <td>Total 4ta</td>
+            <td><input type="number" id="total4ta" class="readonly" readonly></td>
+        </tr>
+        <tr>
+            <td>5ta</td>
+            <td><input type="number" id="quinta" placeholder="0.00"></td>
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td><input type="number" id="total" class="readonly" readonly></td>
+        </tr>
+        <tr>
+            <td>Deducción 7UIT max</td>
+            <td><input type="number" id="uit7" class="readonly" value="37450" readonly></td>
+        </tr>
+        <tr>
+            <td>Gastos deducibles 3UIT</td>
+            <td><input type="number" id="uit3" placeholder="0.00" max="16050"></td>
+        </tr>
+        <tr>
+            <td>ITF</td>
+            <td><input type="number" id="itf" placeholder="0.00"></td>
+        </tr>
+        <tr>
+            <td>Impuestos a pagar</td>
+            <td><input type="number" id="impuestos" class="readonly" readonly></td>
+        </tr>
+    </table>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+    <script>
+        // Valor de UIT 2025 actualizado
+        const UIT_2025 = 5350;
+        
+        // Obtener referencias a los inputs
+        const saldo = document.getElementById('saldo');
+        const saldoPlus = document.getElementById('saldoPlus');
+        const saldoMinus = document.getElementById('saldoMinus');
+        const otros = document.getElementById('otros');
+        const total4ta = document.getElementById('total4ta');
+        const quinta = document.getElementById('quinta');
+        const total = document.getElementById('total');
+        const uit7 = document.getElementById('uit7');
+        const uit3 = document.getElementById('uit3');
+        const itf = document.getElementById('itf');
+        const impuestos = document.getElementById('impuestos');
 
+        // Establecer máximo para gastos deducibles (3 UIT)
+        uit3.max = UIT_2025 * 3;
+
+        // Función para calcular todos los valores
+        function calcularValores() {
+            // Obtener valores base
+            const saldoValue = parseFloat(saldo.value) || 0;
+            const otrosValue = parseFloat(otros.value) || 0;
+            const quintaValue = parseFloat(quinta.value) || 0;
+            const uit3Value = parseFloat(uit3.value) || 0;
+            const itfValue = parseFloat(itf.value) || 0;
+
+            // Calcular Saldo+20%
+            const saldoPlusValue = saldoValue * 0.2;
+            saldoPlus.value = saldoPlusValue.toFixed(2);
+
+            // Calcular Saldo-saldo20%
+            const saldoMinusValue = saldoValue - saldoPlusValue;
+            saldoMinus.value = saldoMinusValue.toFixed(2);
+
+            // Calcular Total 4ta
+            const total4taValue = saldoMinusValue + otrosValue;
+            total4ta.value = total4taValue.toFixed(2);
+
+            // Calcular Total
+            const totalValue = total4taValue + quintaValue;
+            total.value = totalValue.toFixed(2);
+
+            // Calcular Impuestos a pagar
+            const impuestosValue = totalValue - parseFloat(uit7.value) - uit3Value - itfValue;
+            impuestos.value = impuestosValue.toFixed(2);
+        }
+
+        // Agregar event listeners a todos los inputs que pueden cambiar
+        [saldo, otros, quinta, uit3, itf].forEach(input => {
+            input.addEventListener('input', calcularValores);
+        });
+    </script>
 </body>
 </html>
