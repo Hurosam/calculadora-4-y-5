@@ -451,31 +451,31 @@
             
             // Tramo 2: 5-20 UIT (14%)
             if (rentaNeta > limite1) {
-                montos[1] = Math.min(rentaNeta - limite1);
+                montos[1] = Math.min(rentaNeta, limite2);
             }
             
             // Tramo 3: 20-35 UIT (17%)
             if (rentaNeta > limite2) {
-                montos[2] = Math.min(rentaNeta - limite2);
+                montos[2] = Math.min(rentaNeta, limite3);
             }
             
             // Tramo 4: 35-45 UIT (20%)
             if (rentaNeta > limite3) {
-                montos[3] = Math.min(rentaNeta - limite3);
+                montos[3] = Math.min(rentaNeta, limite4);
             }
             
             // Tramo 5: Más de 45 UIT (30%)
             if (rentaNeta > limite4) {
-                montos[4] = rentaNeta - limite4;
+                montos[4] = rentaNeta;
             }
-        
+
             // Actualizar montos en la tabla
             document.getElementById('monto1').textContent = montos[0].toFixed(2);
             document.getElementById('monto2').textContent = montos[1].toFixed(2);
             document.getElementById('monto3').textContent = montos[2].toFixed(2);
             document.getElementById('monto4').textContent = montos[3].toFixed(2);
             document.getElementById('monto5').textContent = montos[4].toFixed(2);
-        
+
             // Calcular y actualizar impuestos
             const impuestos = [
                 montos[0] * 0.08,
@@ -484,13 +484,13 @@
                 montos[3] * 0.20,
                 montos[4] * 0.30
             ];
-        
+
             document.getElementById('impuesto1').textContent = impuestos[0].toFixed(2);
             document.getElementById('impuesto2').textContent = impuestos[1].toFixed(2);
             document.getElementById('impuesto3').textContent = impuestos[2].toFixed(2);
             document.getElementById('impuesto4').textContent = impuestos[3].toFixed(2);
             document.getElementById('impuesto5').textContent = impuestos[4].toFixed(2);
-        
+
             return impuestos.reduce((a, b) => a + b, 0);
         }
         
