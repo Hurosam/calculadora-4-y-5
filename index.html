@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Renta SUNAT - 4ta y 5ta Categoría</title>
+    <title>Simulador de Renta SUNAT - 4ta y 5ta Categoría 2025</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -13,6 +13,8 @@
             --accent-color: #4CAF50;
             --background-color: #F8F9FA;
             --text-color: #2D3436;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
         }
 
         body {
@@ -24,7 +26,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
@@ -50,24 +52,28 @@
         }
 
         .calculator-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
         }
 
         .input-group {
             margin-bottom: 1.5rem;
-            position: relative;
-            padding-left: 1.5rem;
-            margin-left: 1rem;
-            border-left: 4px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .input-group.user-input {
-            border-left-color: var(--primary-color);
-        }
-
-        .input-group.auto-calculated {
-            border-left-color: var(--accent-color);
         }
 
         .input-label {
@@ -76,241 +82,105 @@
             gap: 0.5rem;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--text-color);
         }
 
         .input-field {
-            width: 95%;
-            padding: 12px 16px;
+            width: 100%;
+            padding: 0.75rem;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: white;
         }
 
         .input-field:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(26, 77, 143, 0.2);
             outline: none;
+            box-shadow: 0 0 0 2px rgba(26,77,143,0.2);
         }
 
         .input-field.readonly {
-            background: #f8f9fa;
-            font-weight: 500;
-            color: var(--text-color);
-            position: relative;
-            padding-right: 40px;
+            background-color: #f8f9fa;
+            cursor: not-allowed;
         }
 
-        .input-field.readonly::after {
-            content: "🟢";
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-        }
-
-        .info-icon {
-            color: var(--secondary-color);
-            cursor: help;
-            font-size: 1.1rem;
-            transition: transform 0.2s ease;
-            margin-left: 8px;
-        }
-
-        .tooltip {
-            visibility: hidden;
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 10px 15px;
+        .tax-rates {
+            background-color: #f8f9fa;
+            padding: 1rem;
             border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .tax-rate-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tax-rate-item:last-child {
+            border-bottom: none;
+        }
+
+        .tax-rate-item span {
+            text-align: right;
+        }
+
+        .tax-rate-item span:first-child {
+            text-align: left;
+        }
+
+        .result-section {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-amount {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .info-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .info-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            border-radius: 6px;
             position: absolute;
-            z-index: 100;
-            left: 30px;
-            top: -10px;
-            width: 250px;
-            font-size: 0.9rem;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
-            pointer-events: none;
         }
 
-        .info-icon:hover + .tooltip {
+        .info-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
 
-        .results-section {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 0 0 16px 16px;
-        }
-
-        .total-box {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 2rem 0;
-        }
-
-        .uit-info {
-            background: #e3f2fd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1.5rem 0;
-            font-size: 0.9rem;
-            line-height: 1.8;
-        }
-
-        .section-divider {
-            margin: 2rem 0;
-            border: 0;
-            border-top: 2px dashed #e0e0e0;
-        }
-
-        .tax-info {
-            background: #fff3cd;
+        .credits-section {
+            background-color: #fff3cd;
             padding: 1rem;
             border-radius: 8px;
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #856404;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .container {
-                border-radius: 12px;
-            }
-
-            .header {
-                padding: 1.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.4rem;
-            }
-
-            .input-field {
-                width: 90%;
-            }
-            /* Estilos para la sección de explicación */
-            .explanation-section {
-                margin-top: 2rem;
-                background: #fff;
-                border-radius: 12px;
-                box-shadow: 0 3px 15px rgba(0,0,0,0.05);
-                overflow: hidden;
-            }
-
-            .explanation-toggle {
-                cursor: pointer;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1rem;
-                background: var(--primary-color);
-                color: white;
-                transition: all 0.3s ease;
-            }
-
-            .explanation-toggle:hover {
-                background: #0F3460;
-            }
-
-            .explanation-toggle span {
-                font-weight: 500;
-                font-size: 1.05rem;
-            }
-
-            .explanation-content {
-                padding: 1.5rem;
-                background: #f8faff;
-            }
-
-            .calculation-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .calculation-card {
-                background: white;
-                padding: 1.2rem;
-                border-radius: 10px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                text-align: center;
-            }
-
-            .calculation-card h4 {
-                margin: 0 0 0.8rem 0;
-                color: var(--primary-color);
-                font-size: 0.95rem;
-                font-weight: 600;
-            }
-
-            .calculation-value {
-                font-size: 1.3rem;
-                font-weight: 700;
-                color: var(--text-color);
-            }
-
-            .tasa-badge {
-                background: var(--accent-color);
-                color: white;
-                padding: 4px 12px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                display: inline-block;
-                margin-top: 0.5rem;
-            }
-
-            .explanation-note {
-                background: white;
-                padding: 1.2rem;
-                border-radius: 8px;
-                border-left: 4px solid var(--primary-color);
-                margin-top: 1.5rem;
-            }
-
-            .explanation-note ul {
-                list-style: none;
-                padding: 0;
-                margin: 0.8rem 0;
-            }
-
-            .explanation-note li {
-                display: flex;
-                align-items: center;
-                gap: 0.8rem;
-                margin: 0.6rem 0;
-                color: #4a5568;
-            }
-
-            .explanation-note li i {
-                color: var(--secondary-color);
-                min-width: 20px;
-            }
-
-            @media (max-width: 768px) {
-                .calculation-grid {
-                    grid-template-columns: 1fr;
-                }
-                
-                .calculation-card {
-                    padding: 1rem;
-                }
-            }
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -319,266 +189,425 @@
         <div class="header">
             <h1>
                 <i class="fas fa-calculator"></i>
-                Simulador de Impuesto a la Renta
+                Calculadora de Impuesto a la Renta 2025
             </h1>
         </div>
 
         <div class="calculator-section">
-            <div class="uit-info">
-                <div><strong>Valor UIT 2025:</strong> S/ 5,350.00</div>
-                <div><strong>Límite deducción 20%:</strong> S/ 100,800 (18.84 UIT)</div>
+            <!-- Sección de Ingresos -->
+            <div class="income-section">
+                <h2 class="section-title">Ingresos</h2>
+                
+                <div class="input-group">
+                    <label class="input-label">
+                        Renta Bruta 4ta Categoría
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Ingresos totales por servicios independientes</span>
+                        </div>
+                    </label>
+                    <input type="number" id="rentaBruta" class="input-field" min="0" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Deducción 20%</label>
+                    <input type="number" id="deduccion20" class="input-field readonly" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Renta Neta 4ta</label>
+                    <input type="number" id="rentaNeta" class="input-field readonly" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        Otras Rentas 4ta
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Otros ingresos de 4ta categoría</span>
+                        </div>
+                    </label>
+                    <input type="number" id="otrasRentas" class="input-field" min="0" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        Renta 5ta Categoría
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Ingresos por trabajo dependiente</span>
+                        </div>
+                    </label>
+                    <input type="number" id="renta5ta" class="input-field" min="0" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        Total Rentas 4ta y 5ta
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Suma de rentas de 4ta y 5ta categoría</span>
+                        </div>
+                    </label>
+                    <input type="number" id="totalRentas" class="input-field readonly" readonly>
+                </div>
             </div>
 
-            <!-- Sección de entrada de usuario -->
-            <div class="input-group user-input">
-                <label class="input-label">
-                    Renta Bruta Individual
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Ingrese el monto total de sus ingresos brutos anuales</span>
-                </label>
-                <input type="number" id="saldo" class="input-field" placeholder="0.00" step="0.01">
-            </div>
+            <!-- Sección de Deducciones -->
+            <div class="deductions-section">
+                <h2 class="section-title">Deducciones</h2>
+                
+                <div class="input-group">
+                    <label class="input-label">Deducción 7 UIT</label>
+                    <input type="number" id="deduccion7UIT" class="input-field readonly" readonly>
+                </div>
 
-            <hr class="section-divider">
+                <div class="input-group">
+                    <label class="input-label">
+                        Alquiler de bienes inmuebles
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Se considerará el 30% del monto ingresado</span>
+                        </div>
+                    </label>
+                    <input type="number" id="gastoAlquiler" class="input-field" min="0" step="0.01">
+                </div>
 
-            <!-- Sección de cálculos automáticos -->
-            <div class="input-group auto-calculated">
-                <label class="input-label">
-                    Deducción 20%
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Deducción automática del 20% sobre la renta bruta (Máximo S/100,800)</span>
-                </label>
-                <input type="number" id="saldoPlus" class="input-field readonly" readonly>
-            </div>
+                <div class="input-group">
+                    <label class="input-label">
+                        Gastos en restaurantes, hoteles y bares
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Se considerará el 15% del monto ingresado</span>
+                        </div>
+                    </label>
+                    <input type="number" id="gastoHotelRestaurante" class="input-field" min="0" step="0.01">
+                </div>
 
-            <div class="input-group auto-calculated">
-                <label class="input-label">
-                    Renta Neta
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Renta después de aplicar la deducción del 20%</span>
-                </label>
-                <input type="number" id="saldoMinus" class="input-field readonly" readonly>
-            </div>
+                <div class="input-group">
+                    <label class="input-label">
+                        Médicos, odontólogos y servicios independientes
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Se considerará el 30% del monto ingresado</span>
+                        </div>
+                    </label>
+                    <input type="number" id="gastoMedico" class="input-field" min="0" step="0.01">
+                </div>
 
-            <div class="input-group user-input">
-                <label class="input-label">
-                    Otras Rentas
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Ingresos adicionales por rentas de cuarta categoría</span>
-                </label>
-                <input type="number" id="otros" class="input-field" placeholder="0.00" step="0.01">
-            </div>
+                <div class="input-group">
+                    <label class="input-label">
+                        Aportaciones Essalud trabajadores del hogar
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Se considerará el 100% del monto ingresado</span>
+                        </div>
+                    </label>
+                    <input type="number" id="gastoEssalud" class="input-field" min="0" step="0.01">
+                </div>
 
-            <div class="input-group auto-calculated">
-                <label class="input-label">
-                    Total Rentas 4ta
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Suma de renta neta y otras rentas</span>
-                </label>
-                <input type="number" id="total4ta" class="input-field readonly" readonly>
-            </div>
+                <div class="input-group">
+                    <label class="input-label">
+                        Total Gastos Deducibles (3 UIT)
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Suma de gastos deducibles, máximo 3 UIT</span>
+                        </div>
+                    </label>
+                    <input type="number" id="gastos3UIT" class="input-field readonly" readonly>
+                </div>
 
-            <div class="input-group user-input">
-                <label class="input-label">
-                    Total Rentas 5ta
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Ingresos obtenidos en planilla (Quinta categoría)</span>
-                </label>
-                <input type="number" id="quinta" class="input-field" placeholder="0.00" step="0.01">
-            </div>
+                <div class="input-group">
+                    <label class="input-label">
+                        ITF
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Se considerará el 0.005% del monto ingresado</span>
+                        </div>
+                    </label>
+                    <input type="number" id="itf" class="input-field" min="0" step="0.01">
+                </div>
 
-            <div class="input-group auto-calculated">
-                <label class="input-label">
-                    Total General
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Suma total de todas las rentas</span>
-                </label>
-                <input type="number" id="total" class="input-field readonly" readonly>
-            </div>
-
-            <hr class="section-divider">
-
-            <div class="input-group auto-calculated">
-                <label class="input-label">
-                    Deducción 7 UIT
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Deducción máxima equivalente a 7 UIT (S/37,450)</span>
-                </label>
-                <input type="number" id="uit7" class="input-field readonly" value="37450" readonly>
-            </div>
-
-            <div class="input-group user-input">
-                <label class="input-label">
-                    Gastos Deducibles 3 UIT
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Máximo deducible: S/16,050 (3 UIT de 2025)</span>
-                </label>
-                <input type="number" id="uit3" class="input-field" placeholder="0.00" max="16050" step="0.01">
-            </div>
-
-            <div class="input-group user-input">
-                <label class="input-label">
-                    ITF
-                    <i class="fas fa-info-circle info-icon"></i>
-                    <span class="tooltip">Impuesto a las transacciones financieras</span>
-                </label>
-                <input type="number" id="itf" class="input-field" placeholder="0.00" step="0.01">
-            </div>
-
-            <div class="total-box">
-                <span class="total-label">Impuesto a Pagar:</span>
-                <span class="total-value" id="impuestos">S/ 0.00</span>
-            </div>
-
-            <div class="explanation-section">
-                <div class="explanation-toggle" onclick="toggleExplanation()">
-                    <span>Detalle del cálculo</span>
-                    <i class="fas fa-chevron-down"></i>
+                <div class="input-group">
+                    <label class="input-label">Total renta neta de trabajo</label>
+                    <input type="number" id="totalRentaNeta" class="input-field readonly" readonly>
                 </div>
                 
-                <div class="explanation-content" id="explanationContent">
-                    <div class="calculation-grid">
-                        <div class="calculation-card">
-                            <h4>Base Imponible</h4>
-                            <div class="calculation-value" id="baseImponible">S/ 0.00</div>
-                        </div>
-                        
-                        <div class="calculation-card">
-                            <h4>Tasa Aplicada</h4>
-                            <div class="calculation-value">8% Según Ley 31045</div>
-                        </div>
-                        
-                        <div class="calculation-card">
-                            <h4>Deducciones Totales</h4>
-                            <div class="calculation-value" id="deduccionesTotales">S/ 0.00</div>
-                        </div>
+            </div>
+        </div>
+
+        <!-- Sección de Resultados -->
+        <div class="result-section">
+            <div class="result-title">Total renta imponible de trabajo</div>
+            <div id="totalRentaNetaT" class="result-amount">S/ 0.00</div>
+        </div>
+
+        <!-- Sección de Tasas -->
+        <div class="tax-rates">
+            <h2 class="section-title">Tasas del Impuesto</h2>
+            <div class="tax-rate-item">
+                <span>Hasta 5 UIT</span>
+                <span>8%</span>
+                <span id="monto1">0.00</span>
+                <span id="impuesto1">0.00</span>
+            </div>
+            <div class="tax-rate-item">
+                <span>Más de 5 UIT hasta 20 UIT</span>
+                <span>14%</span>
+                <span id="monto2">0.00</span>
+                <span id="impuesto2">0.00</span>
+            </div>
+            <div class="tax-rate-item">
+                <span>Más de 20 UIT hasta 35 UIT</span>
+                <span>17%</span>
+                <span id="monto3">0.00</span>
+                <span id="impuesto3">0.00</span>
+            </div>
+            <div class="tax-rate-item">
+                <span>Más de 35 UIT hasta 45 UIT</span>
+                <span>20%</span>
+                <span id="monto4">0.00</span>
+                <span id="impuesto4">0.00</span>
+            </div>
+            <div class="tax-rate-item">
+                <span>Más de 45 UIT</span>
+                <span>30%</span>
+                <span id="monto5">0.00</span>
+                <span id="impuesto5">0.00</span>
+            </div>
+        </div>
+        <div class="result-section">
+            <div class="result-title">Impuesto a la renta</div>
+            <div id="resultadoFinal" class="result-amount">S/ 0.00</div>
+        </div>
+        <!-- Sección de Créditos contra el impuesto -->
+        <h2 class="section-title">Créditos contra el impuesto</h2>
+        <div class="calculator-section credits-section">            
+            <div class="input-group">
+                <label class="input-label">
+                    Pagos a cuenta y/o saldo a favor
+                    <div class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">Pagos realizados durante el año o saldos a favor de períodos anteriores</span>
                     </div>
-                    <br>
-            
-                    <div class="explanation-note">
-                        <strong>¿Cómo se calcula?</strong>
-                        <ul>
-                            <li>
-                                <i class="fas fa-calculator"></i>
-                                <span>(Base Imponible) - (Deducciones) = Monto Gravado</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-percentage"></i>
-                                <span>(Monto Gravado) × (Tasa %) = Impuesto a Pagar</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-info-circle"></i>
-                                <span>Deducciones autorizadas por SUNAT (Ley N° 30737)</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                </label>
+                <input type="number" id="pagosCuenta" class="input-field" min="0" step="0.01">
             </div>
 
-            <div class="tax-info">
-                <i class="fas fa-exclamation-triangle"></i>
-                Este cálculo es referencial y no sustituye la declaración oficial ante SUNAT
+            <div class="input-group">
+                <label class="input-label">
+                    Retenciones de 4ta categoría
+                    <div class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">Retenciones realizadas por el empleador</span>
+                    </div>
+                </label>
+                <input type="number" id="retenciones4" class="input-field" min="0" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">
+                    Retenciones de 5ta categoría
+                    <div class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">Retenciones realizadas por el empleador</span>
+                    </div>
+                </label>
+                <input type="number" id="retenciones5" class="input-field" min="0" step="0.01">
+            </div>
+
+            <!-- Sección de resultados -->
+            <div class="result-section">
+                <div class="result-title">Impuesto a pagar / Saldo a favor</div>
+                <div id="resultadoImpuestoPagar" class="result-amount">S/ 0.00</div>
             </div>
         </div>
     </div>
 
     <script>
         const UIT_2025 = 5350;
-        const inputs = {
-            saldo: document.getElementById('saldo'),
-            saldoPlus: document.getElementById('saldoPlus'),
-            saldoMinus: document.getElementById('saldoMinus'),
-            otros: document.getElementById('otros'),
-            total4ta: document.getElementById('total4ta'),
-            quinta: document.getElementById('quinta'),
-            total: document.getElementById('total'),
-            uit7: document.getElementById('uit7'),
-            uit3: document.getElementById('uit3'),
-            itf: document.getElementById('itf'),
-            impuestos: document.getElementById('impuestos')
-        };
-    
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('es-PE', {
-                style: 'currency',
-                currency: 'PEN',
-                minimumFractionDigits: 2
-            }).format(value);
+
+        // Inicializar campos
+        document.getElementById('deduccion7UIT').value = (UIT_2025 * 7).toFixed(2);
+
+        function calcularImpuestoProgresivo(baseImponible) {
+            let impuesto = 0;
+            
+            // Hasta 5 UIT (8%)
+            const limite1 = UIT_2025 * 5;
+            if (baseImponible <= limite1) {
+                return baseImponible * 0.08;
+            }
+            impuesto += limite1 * 0.08;
+            
+            // Más de 5 UIT hasta 20 UIT (14%)
+            const limite2 = UIT_2025 * 20;
+            if (baseImponible <= limite2) {
+                return impuesto + (baseImponible - limite1) * 0.14;
+            }
+            impuesto += (limite2 - limite1) * 0.14;
+            
+            // Más de 20 UIT hasta 35 UIT (17%)
+            const limite3 = UIT_2025 * 35;
+            if (baseImponible <= limite3) {
+                return impuesto + (baseImponible - limite2) * 0.17;
+            }
+            impuesto += (limite3 - limite2) * 0.17;
+            
+            // Más de 35 UIT hasta 45 UIT (20%)
+            const limite4 = UIT_2025 * 45;
+            if (baseImponible <= limite4) {
+                return impuesto + (baseImponible - limite3) * 0.20;
+            }
+            impuesto += (limite4 - limite3) * 0.20;
+            
+            // Más de 45 UIT (30%)
+            impuesto += (baseImponible - limite4) * 0.30;
+            
+            return impuesto;
         }
-    
-        function calcularImpuesto() {
-            try {
-                const valores = {
-                    saldo: parseFloat(inputs.saldo.value) || 0,
-                    otros: parseFloat(inputs.otros.value) || 0,
-                    quinta: parseFloat(inputs.quinta.value) || 0,
-                    uit3: Math.min(parseFloat(inputs.uit3.value) || 0, UIT_2025 * 3),
-                    itf: parseFloat(inputs.itf.value) || 0
-                };
-    
-                // Cálculos principales
-                const deduccion20 = Math.min(valores.saldo * 0.2, 100800);
-                const rentaNeta = valores.saldo - deduccion20;
-                const total4ta = rentaNeta + valores.otros;
-                const totalGeneral = total4ta + valores.quinta;
-                const deduccionesTotales = (UIT_2025 * 7) + valores.uit3 + valores.itf;
-                const baseImponible = totalGeneral - deduccionesTotales;
-                const impuesto = Math.max(baseImponible * 0.08, 0);
-    
-                // Actualizar campos principales
-                inputs.saldoPlus.value = deduccion20.toFixed(2);
-                inputs.saldoMinus.value = rentaNeta.toFixed(2);
-                inputs.total4ta.value = total4ta.toFixed(2);
-                inputs.total.value = totalGeneral.toFixed(2);
-                inputs.impuestos.textContent = formatCurrency(impuesto);
-    
-                // Actualizar explicación detallada
-                document.getElementById('baseImponible').textContent = formatCurrency(baseImponible);
-                document.getElementById('deduccionesTotales').textContent = formatCurrency(deduccionesTotales);
-                
-                const explanationNote = document.getElementById('explanationNote');
-                let message = "";
-                
-                if(impuesto === 0) {
-                    message = `⚠️ El impuesto es ${formatCurrency(0)} porque:<br>
-                              - Las deducciones totales (${formatCurrency(deduccionesTotales)})<br>
-                              - Superan la base imponible (${formatCurrency(totalGeneral)})`;
-                    explanationNote.className = "explanation-note alert";
-                } else {
-                    message = `El cálculo considera:<br>
-                              - Base imponible: ${formatCurrency(baseImponible)}<br>
-                              - Tasa del 8% según ley peruana<br>
-                              - Deducciones autorizadas por SUNAT`;
-                    explanationNote.className = "explanation-note info";
-                }
-                
-                explanationNote.innerHTML = message;
-    
-            } catch (error) {
-                console.error('Error en el cálculo:', error);
+
+        function actualizarTablaTasas(rentaNeta) {
+            const limite1 = UIT_2025 * 5;
+            const limite2 = UIT_2025 * 20;
+            const limite3 = UIT_2025 * 35;
+            const limite4 = UIT_2025 * 45;
+            
+            let montoRestante = rentaNeta;
+            
+            // Primera fila (hasta 5 UIT)
+            const monto1 = Math.min(montoRestante, limite1);
+            document.getElementById('monto1').textContent = monto1.toFixed(2);
+            document.getElementById('impuesto1').textContent = (monto1 * 0.08).toFixed(2);
+            montoRestante -= monto1;
+            
+            // Segunda fila (5-20 UIT)
+            const monto2 = Math.min(montoRestante, limite2 - limite1);
+            document.getElementById('monto2').textContent = monto2.toFixed(2);
+            document.getElementById('impuesto2').textContent = (monto2 * 0.14).toFixed(2);
+            montoRestante -= monto2;
+            
+            // Tercera fila (20-35 UIT)
+            const monto3 = Math.min(montoRestante, limite3 - limite2);
+            document.getElementById('monto3').textContent = monto3.toFixed(2);
+            document.getElementById('impuesto3').textContent = (monto3 * 0.17).toFixed(2);
+            montoRestante -= monto3;
+            
+            // Cuarta fila (35-45 UIT)
+            const monto4 = Math.min(montoRestante, limite4 - limite3);
+            document.getElementById('monto4').textContent = monto4.toFixed(2);
+            document.getElementById('impuesto4').textContent = (monto4 * 0.20).toFixed(2);
+            montoRestante -= monto4;
+            
+            // Quinta fila (más de 45 UIT)
+            const monto5 = Math.max(montoRestante, 0);
+            document.getElementById('monto5').textContent = monto5.toFixed(2);
+            document.getElementById('impuesto5').textContent = (monto5 * 0.30).toFixed(2);
+        }
+
+        function calcular() {
+            // Obtener valores de ingresos y deducciones
+            const rentaBruta = parseFloat(document.getElementById('rentaBruta').value) || 0;
+            const otrasRentas = parseFloat(document.getElementById('otrasRentas').value) || 0;
+            const renta5ta = parseFloat(document.getElementById('renta5ta').value) || 0;
+            const itf = parseFloat(document.getElementById('itf').value) || 0;
+            
+            // Gastos deducibles
+            const gastoAlquiler = (parseFloat(document.getElementById('gastoAlquiler').value) || 0) * 0.30;
+            const gastoHotelRestaurante = (parseFloat(document.getElementById('gastoHotelRestaurante').value) || 0) * 0.15;
+            const gastoMedico = (parseFloat(document.getElementById('gastoMedico').value) || 0) * 0.30;
+            const gastoEssalud = (parseFloat(document.getElementById('gastoEssalud').value) || 0);
+            
+            // Calcular deducción 20%
+            const deduccion20 = Math.min(rentaBruta * 0.2, 100800);
+            document.getElementById('deduccion20').value = deduccion20.toFixed(2);
+            
+            // Calcular renta neta 4ta
+            const rentaNeta = rentaBruta - deduccion20;
+            document.getElementById('rentaNeta').value = rentaNeta.toFixed(2);
+            
+            // Calcular total de rentas (4ta y 5ta)
+            const totalRentas = rentaNeta + otrasRentas + renta5ta;
+            document.getElementById('totalRentas').value = totalRentas.toFixed(2);
+            
+            // Calcular deducción 7 UIT (limitada al total de rentas)
+            const deduccion7UIT = Math.min(UIT_2025 * 7, totalRentas);
+            document.getElementById('deduccion7UIT').value = deduccion7UIT.toFixed(2);
+            
+            // Calcular total de gastos deducibles (máximo 3 UIT)
+            const totalGastosDeducibles = gastoAlquiler + gastoHotelRestaurante + gastoMedico + gastoEssalud;
+            const gastos3UITLimite = Math.min(totalGastosDeducibles, UIT_2025 * 3);
+            document.getElementById('gastos3UIT').value = gastos3UITLimite.toFixed(2);
+            
+            // Calcular total renta neta de trabajo
+            const totalRentaNeta = totalRentas - deduccion7UIT - gastos3UITLimite - (itf * 0.00005);
+            document.getElementById('totalRentaNeta').value = totalRentaNeta.toFixed(2);
+            
+            // Actualizar tabla de tasas
+            actualizarTablaTasas(Math.max(totalRentaNeta, 0));
+            
+            // Calcular base imponible
+            const baseImponible = Math.max(totalRentaNeta, 0);
+            
+            // Calcular impuesto a la renta (impuesto progresivo)
+            const impuestoFinal = calcularImpuestoProgresivo(baseImponible);
+            
+            // Mostrar "Impuesto a la renta" en su campo correspondiente
+            const resultadoElement = document.getElementById('resultadoFinal');
+            resultadoElement.textContent = `S/ ${impuestoFinal.toFixed(2)}`;
+            resultadoElement.style.color = 'white';
+
+            const resultadoElemento = document.getElementById('totalRentaNetaT');
+            resultadoElemento.textContent = `S/ ${totalRentaNeta.toFixed(2)}`;
+            resultadoElemento.style.color = 'white';
+            
+            // Obtener créditos ingresados
+            const pagosCuenta = parseFloat(document.getElementById('pagosCuenta').value) || 0;
+            const retenciones4 = parseFloat(document.getElementById('retenciones4').value) || 0;
+            const retenciones5 = parseFloat(document.getElementById('retenciones5').value) || 0;
+            
+            // Aquí se resta el total de créditos al monto de Impuesto a la renta
+            const impuestoAPagar = impuestoFinal - (pagosCuenta + retenciones4 + retenciones5);
+            
+            // Mostrar "Impuesto a pagar / Saldo a favor" en su campo (si es negativo, se muestra como saldo a favor)
+            const resultadoImpuestoPagarElement = document.getElementById('resultadoImpuestoPagar');
+            if (impuestoAPagar >= 0) {
+                resultadoImpuestoPagarElement.textContent = `S/ ${impuestoAPagar.toFixed(2)}`;
+                resultadoImpuestoPagarElement.style.color = 'white';
+            } else {
+                resultadoImpuestoPagarElement.textContent = `- S/ ${Math.abs(impuestoAPagar).toFixed(2)}`;
+                resultadoImpuestoPagarElement.style.color = '#98FB98';
             }
         }
-    
-        function toggleExplanation() {
-            const content = document.getElementById('explanationContent');
-            const icon = document.querySelector('.explanation-toggle i');
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            icon.classList.toggle('fa-chevron-up');
-            icon.classList.toggle('fa-chevron-down');
-        }
-    
-        // Event listeners
-        [inputs.saldo, inputs.otros, inputs.quinta, inputs.uit3, inputs.itf].forEach(input => {
-            input.addEventListener('input', calcularImpuesto);
-            input.addEventListener('blur', function(e) {
-                if (e.target.value) {
-                    e.target.value = parseFloat(e.target.value).toFixed(2);
+
+        // Incluir los campos de entrada, incluidos los de créditos, para que recalculen al modificarse
+        const inputIds = [
+            'rentaBruta',
+            'otrasRentas',
+            'renta5ta',
+            'gastoAlquiler',
+            'gastoHotelRestaurante',
+            'gastoMedico',
+            'gastoEssalud',
+            'itf',
+            'pagosCuenta',
+            'retenciones4',
+            'retenciones5'
+        ];
+
+        inputIds.forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', calcular);
+            input.addEventListener('blur', function() {
+                if (this.value) {
+                    this.value = parseFloat(this.value).toFixed(2);
                 }
             });
         });
-    
-        // Inicializar cálculo
-        calcularImpuesto();
+
+        // Calcular inicialmente
+        calcular();
+
     </script>
 </body>
 </html>
