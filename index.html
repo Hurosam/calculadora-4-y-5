@@ -210,7 +210,13 @@
                 </div>
 
                 <div class="input-group">
-                    <label class="input-label">Deducción 20%</label>
+                    <label class="input-label">
+                        Deducción 20%
+                        <div class="info-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Máximo hasta 24 UITs</span>
+                        </div>
+                    </label>
                     <input type="number" id="deduccion20" class="input-field readonly" readonly>
                 </div>
 
@@ -429,7 +435,7 @@
 
         // Inicializar campos
         document.getElementById('deduccion7UIT').value = (UIT_2025 * 7).toFixed(2);
-
+        
         function actualizarTablaTasas(rentaNeta) {
             const limite1 = UIT_2025 * 5;     // 26,750
             const limite2 = UIT_2025 * 20;    // 107,000
@@ -445,31 +451,31 @@
             
             // Tramo 2: 5-20 UIT (14%)
             if (rentaNeta > limite1) {
-                montos[1] = Math.min(rentaNeta, limite2);
+                montos[1] = Math.min(rentaNeta - limite1, limite2 - limite1);
             }
             
             // Tramo 3: 20-35 UIT (17%)
             if (rentaNeta > limite2) {
-                montos[2] = Math.min(rentaNeta, limite3);
+                montos[2] = Math.min(rentaNeta - limite2, limite3 - limite2);
             }
             
             // Tramo 4: 35-45 UIT (20%)
             if (rentaNeta > limite3) {
-                montos[3] = Math.min(rentaNeta, limite4);
+                montos[3] = Math.min(rentaNeta - limite3, limite4 - limite3);
             }
             
             // Tramo 5: Más de 45 UIT (30%)
             if (rentaNeta > limite4) {
-                montos[4] = rentaNeta;
+                montos[4] = rentaNeta - limite4;
             }
-
+        
             // Actualizar montos en la tabla
             document.getElementById('monto1').textContent = montos[0].toFixed(2);
             document.getElementById('monto2').textContent = montos[1].toFixed(2);
             document.getElementById('monto3').textContent = montos[2].toFixed(2);
             document.getElementById('monto4').textContent = montos[3].toFixed(2);
             document.getElementById('monto5').textContent = montos[4].toFixed(2);
-
+        
             // Calcular y actualizar impuestos
             const impuestos = [
                 montos[0] * 0.08,
@@ -478,16 +484,16 @@
                 montos[3] * 0.20,
                 montos[4] * 0.30
             ];
-
+        
             document.getElementById('impuesto1').textContent = impuestos[0].toFixed(2);
             document.getElementById('impuesto2').textContent = impuestos[1].toFixed(2);
             document.getElementById('impuesto3').textContent = impuestos[2].toFixed(2);
             document.getElementById('impuesto4').textContent = impuestos[3].toFixed(2);
             document.getElementById('impuesto5').textContent = impuestos[4].toFixed(2);
-
+        
             return impuestos.reduce((a, b) => a + b, 0);
         }
-
+        
         function calcular() {
             // Obtener valores de ingresos y deducciones
             const rentaBruta = parseFloat(document.getElementById('rentaBruta').value) || 0;
@@ -501,8 +507,9 @@
             const gastoMedico = (parseFloat(document.getElementById('gastoMedico').value) || 0) * 0.30;
             const gastoEssalud = parseFloat(document.getElementById('gastoEssalud').value) || 0;
             
-            // Calcular deducción 20%
-            const deduccion20 = Math.min(rentaBruta * 0.2, 100800);
+            // Calcular deducción 20% con límite de 24 UIT
+            const LIMITE_24_UIT = UIT_2025 * 24;
+            const deduccion20 = Math.min(rentaBruta * 0.2, LIMITE_24_UIT);
             document.getElementById('deduccion20').value = deduccion20.toFixed(2);
             
             // Calcular renta neta 4ta
@@ -535,7 +542,7 @@
             // Calcular y mostrar impuesto
             const impuestoFinal = actualizarTablaTasas(baseImponible);
             document.getElementById('resultadoFinal').textContent = `S/ ${impuestoFinal.toFixed(2)}`;
-
+        
             // Obtener créditos ingresados
             const pagosCuenta = parseFloat(document.getElementById('pagosCuenta').value) || 0;
             const retenciones4 = parseFloat(document.getElementById('retenciones4').value) || 0;
@@ -554,14 +561,14 @@
                 resultadoImpuestoPagarElement.style.color = '#98FB98';
             }
         }
-
+        
         // Incluir los campos de entrada para que recalculen al modificarse
         const inputIds = [
             'rentaBruta', 'otrasRentas', 'renta5ta',
             'gastoAlquiler', 'gastoHotelRestaurante', 'gastoMedico',
             'gastoEssalud', 'itf', 'pagosCuenta', 'retenciones4', 'retenciones5'
         ];
-
+        
         inputIds.forEach(id => {
             const input = document.getElementById(id);
             input.addEventListener('input', calcular);
@@ -571,7 +578,7 @@
                 }
             });
         });
-
+        
         // Calcular inicialmente
         calcular();
 
